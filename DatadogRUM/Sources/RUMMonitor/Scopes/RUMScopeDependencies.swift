@@ -16,10 +16,11 @@ internal struct VitalsReaders {
 
     init(
         frequency: TimeInterval,
+        notificationCenterProvider: NotificationCenterProvider,
         telemetry: Telemetry = NOPTelemetry()
     ) {
         self.frequency = frequency
-        self.cpu = VitalCPUReader(notificationCenter: .default, telemetry: telemetry)
+        self.cpu = VitalCPUReader(notificationCenterProvider: notificationCenterProvider, telemetry: telemetry)
         self.memory = VitalMemoryReader()
         self.refreshRate = VitalRefreshRateReader()
     }
@@ -38,6 +39,11 @@ internal struct RUMScopeDependencies {
     let distributedTracingSampleRate: SampleRate?
     let eventBuilder: RUMEventBuilder
     let rumUUIDGenerator: RUMUUIDGenerator
+    /// The session ID created synchronously in `RUM.enable()`, adopted by the initial session instead of
+    /// generating a new one. This makes the session's deterministic sampler available through
+    /// `RUMSessionSamplerProvider` before `RUM.enable()` returns. `nil` restores the previous behaviour of
+    /// generating it lazily.
+    let initialSessionUUID: RUMUUID?
     let backtraceReporter: BacktraceReporting?
     /// Integration with CIApp tests. It contains the CIApp test context when active.
     let ciTest: RUMCITest?
@@ -102,6 +108,7 @@ internal struct RUMScopeDependencies {
         networkSettledMetricFactory: @escaping (Date, String) -> TNSMetricTracking,
         interactionToNextViewMetricFactory: @escaping () -> INVMetricTracking?,
         sessionType: RUMSessionType?,
+        initialSessionUUID: RUMUUID? = nil,
         timeseriesCollector: TimeseriesCollecting? = nil
     ) {
         self.featureScope = featureScope
@@ -114,6 +121,7 @@ internal struct RUMScopeDependencies {
         self.distributedTracingSampleRate = distributedTracingSampleRate
         self.eventBuilder = eventBuilder
         self.rumUUIDGenerator = rumUUIDGenerator
+        self.initialSessionUUID = initialSessionUUID
         self.backtraceReporter = backtraceReporter
         self.ciTest = ciTest
         self.syntheticsTest = syntheticsTest

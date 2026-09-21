@@ -11,7 +11,7 @@ let package = Package(
     platforms: [
         .iOS(.v15),
         .tvOS(.v15),
-        .macOS("12.6"),
+        .macOS("12.0"),
         .watchOS(.v9),
         .visionOS(.v1)
     ],
@@ -221,7 +221,7 @@ let package = Package(
             resources: [
                 .copy("Resources/PrivacyInfo.xcprivacy")
             ],
-            swiftSettings: internalSwiftSettings
+            swiftSettings: [.swiftLanguageMode(.v6)] + internalSwiftSettings
         ),
         .target(
             name: "DatadogMachProfiler",
@@ -235,7 +235,7 @@ let package = Package(
                 .target(name: "TestUtilities"),
             ],
             path: "DatadogProfiling/Tests",
-            swiftSettings: [.interoperabilityMode(.Cxx)] + internalSwiftSettings
+            swiftSettings: [.interoperabilityMode(.Cxx), .swiftLanguageMode(.v6)] + internalSwiftSettings
         ),
 
         .target(
