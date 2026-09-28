@@ -1,10 +1,20 @@
 # Unreleased
 
+- [FIX] Release the RUM display-link observer and its frame readers when their owner is released.
+- [FIX] Pin KSCrash to exact version 2.5.1 via SPM to prevent silently resolving newer, unvetted releases.
+- [FIX] Keep attributes isolated when returning to a previously tracked RUM view while its earlier resources are still pending.
+- [IMPROVEMENT] Require Swift tools version 6.2 (Xcode 26) to resolve the package with Swift Package Manager. See [#3231][]
+
+# 3.18.0 / 21-09-2026
+
+- [FIX] Preserve delayed WebView correlation for long-lived active native RUM views.
 - [FIX] Resolve the RUM session sampling decision synchronously in `RUM.enable()`, so WebViews instrumented immediately after initialization get a decision consistent with the session. See [#3183][]
 - [FEATURE] Add CPU-time samples alongside wall-time samples by default for application launch and Continuous Profiling. See [#3195][]
 - [IMPROVEMENT] Migrate `DatadogProfiling` to Swift 6. See [#3186][]
 - [FIX] Fix truncated profiler stacks on arm64e-capable devices by handling pointer authentication when unwinding stack frames. See [#3200][]
+- [FIX] Resolve the RUM session sampling decision synchronously in `RUM.enable()`, so WebViews instrumented immediately after initialization get a decision consistent with the session. See [#3183][]
 - [IMPROVEMENT] Populate RUM Resource `delivery_type` and `transfer_size` from network cache signals, replacing the mobile-only `local_cache_hit` field. See [#3187][]
+- [IMPROVEMENT] Add the `view.name` tag to spans enriched with a sampled-in RUM context, so APM spans can be searched and grouped by RUM view. A `view.name` already set on the span is preserved. See [#3208][]
 
 # 3.17.0 / 09-09-2026
 
@@ -1255,6 +1265,8 @@ Release `2.0` introduces breaking changes. Follow the [Migration Guide](MIGRATIO
 [#3195]: https://github.com/DataDog/dd-sdk-ios/pull/3195
 [#3200]: https://github.com/DataDog/dd-sdk-ios/pull/3200
 [#3187]: https://github.com/DataDog/dd-sdk-ios/pull/3187
+[#3208]: https://github.com/DataDog/dd-sdk-ios/pull/3208
+[#3231]: https://github.com/DataDog/dd-sdk-ios/pull/3231
 
 [@00fa9a]: https://github.com/00FA9A
 [@britton-earnin]: https://github.com/Britton-Earnin
