@@ -21,6 +21,38 @@ final class SRLayerSnapshotTests: LayerSnapshotTestCase {
         )
     }
 
+    func testUIKitText() async throws {
+        try await takeLayerSnapshotFor(
+            TextFixtureViewController(),
+            with: TextAndInputPrivacyLevel.allCases,
+            shouldRecord: shouldRecord
+        )
+    }
+
+    func testTextVariants() async throws {
+        try await takeLayerSnapshotFor(
+            TextVariantsFixtureView(),
+            with: [.maskAll, .maskSensitiveInputs],
+            shouldRecord: shouldRecord
+        )
+    }
+
+    func testDrawingGroup() async throws {
+        try await takeLayerSnapshotFor(
+            DrawingGroupFixtureView(),
+            with: [.maskAll, .maskSensitiveInputs],
+            shouldRecord: shouldRecord
+        )
+    }
+
+    func testCanvas() async throws {
+        try await takeLayerSnapshotFor(
+            CanvasFixtureView(),
+            with: [.maskAll, .maskSensitiveInputs],
+            shouldRecord: shouldRecord
+        )
+    }
+
     func testBasicControlsAndIndicators() async throws {
         try await takeLayerSnapshotFor(
             BasicControlsAndIndicatorsFixtureView(),
@@ -41,6 +73,14 @@ final class SRLayerSnapshotTests: LayerSnapshotTestCase {
         try await takeLayerSnapshotFor(
             AlertFixtureView(),
             with: [.maskAll, .maskSensitiveInputs],
+            shouldRecord: shouldRecord
+        )
+    }
+
+    func testVideoPlayer() async throws {
+        try await takeLayerSnapshotFor(
+            VideoPlayerFixtureView(),
+            waitTime: 1.0,
             shouldRecord: shouldRecord
         )
     }
