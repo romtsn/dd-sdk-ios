@@ -365,7 +365,8 @@ class CrashReportReceiverTests: XCTestCase {
             isSampled: true,
             isInitialSession: .mockRandom(),
             hasTrackedAnyView: .mockRandom(),
-            didStartWithReplay: .mockRandom()
+            didStartWithReplay: .mockRandom(),
+            hasTimeseries: true
         )
 
         let crashReport: DDCrashReport = .mockWith(date: crashDate)
@@ -394,6 +395,8 @@ class CrashReportReceiverTests: XCTestCase {
         XCTAssertEqual(featureScope.eventsWritten.count, 2, "It must send both RUM error and RUM view")
         XCTAssertEqual(featureScope.eventsWritten(ofType: RUMErrorEvent.self).count, 1)
         XCTAssertEqual(featureScope.eventsWritten(ofType: RUMViewEvent.self).count, 1)
+        XCTAssertEqual(featureScope.eventsWritten(ofType: RUMErrorEvent.self).first?.session.hasTimeseries, true)
+        XCTAssertEqual(featureScope.eventsWritten(ofType: RUMViewEvent.self).first?.session.hasTimeseries, true)
     }
 
     func testGivenCrashDuringApplicationLaunch_whenSending_itSendsBothRUMErrorAndRUMViewEvent() throws {
@@ -432,6 +435,14 @@ class CrashReportReceiverTests: XCTestCase {
         XCTAssertEqual(featureScope.eventsWritten.count, 2, "It must send both RUM error and RUM view")
         XCTAssertEqual(featureScope.eventsWritten(ofType: RUMErrorEvent.self).count, 1)
         XCTAssertEqual(featureScope.eventsWritten(ofType: RUMViewEvent.self).count, 1)
+
+        let view = try XCTUnwrap(featureScope.eventsWritten(ofType: RUMViewEvent.self).first?.view)
+        XCTAssertNil(view.slowFramesRate)
+        #if os(macOS) || os(watchOS)
+        XCTAssertNil(view.isSlowRendered, "Rendering is not measured on this platform")
+        #else
+        XCTAssertEqual(view.isSlowRendered, false)
+        #endif
     }
 
     func testGivenCrashDuringApplicationLaunchInAppExtension_whenSending_itSendsIsMainProcessFalse() throws {
@@ -466,6 +477,8 @@ class CrashReportReceiverTests: XCTestCase {
         let view = try XCTUnwrap(featureScope.eventsWritten(ofType: RUMViewEvent.self).first)
         XCTAssertEqual(error.session.isMainProcess, false)
         XCTAssertEqual(view.session.isMainProcess, false)
+        XCTAssertEqual(error.session.hasTimeseries, false)
+        XCTAssertEqual(view.session.hasTimeseries, false)
     }
 
     func testGivenCrashDuringAppLaunchAndNoSampling_whenSending_itIsDropped() throws {
